@@ -18,48 +18,42 @@ skeletons.push(skeleton)
 }
 return skeletons
 }
-toggle.addEventListener("click", function(){
-document.querySelectorAll(".grid img").forEach(img => {
-applyGrayscale(img)
-})
-})
-fetchBtn.addEventListener("click", async function(){
-grid.innerHTML = ""
-const skeletons = loadSkeletons()
-for(let i = 0; i<4; i++){
-const res = await fetch("https://picsum.photos/600/400")
-console.log(res)
-skeletons.forEach(skeleton => skeleton.remove())
+function createCard(photo){
 const card = document.createElement("div")
 card.className = "card"
-const img =  document.createElement("img")
-img.src = res.url
+const img = document.createElement("img")
+img.src=`https://picsum.photos/id/${photo.id}/600/400`
 const info = document.createElement("div")
 info.className = "info"
-info.innerHTML = `<h4>Lukas Budimaier</h4>
-<p>https://unsplash.com/photos/pwaaqfoMibl</p>`
+info.innerHTML = `<h4>${photo.author}</h4>
+<a href="${photo.url}" target="_blank">${photo.url}</a>`
 card.appendChild(img)
 card.appendChild(info)
 grid.appendChild(card)
 applyGrayscale(img)
 }
-})
-loadMore.addEventListener("click", async function(){
-const skeletons = loadSkeletons()
-for(let i=0; i<4; i++){
-const res = await fetch("https://picsum.photos/600/400")
-skeletons.forEach(skeleton=>skeleton.remove())
-const card = document.createElement("div")
-card.className = "card"
-const img = document.createElement("img")
-img.src = res.url
-const info = document.createElement("div")
-info.className = "info"
-info.innerHTML = `<h4>Lukas Budimaier</h4>
-<p>https://unsplash.com/photos/pwaaqfoMibl</p>`
-card.appendChild(img)
-card.appendChild(info)
-grid.appendChild(card)
+toggle.addEventListener("click", () =>{
+document.querySelectorAll(".grid img").forEach(img => {
 applyGrayscale(img)
+})
+})
+fetchBtn.addEventListener("click", async ()=>{
+grid.innerHTML = ""
+const skeletons = loadSkeletons()
+const res = await fetch('https://picsum.photos/v2/list?page=' + (Math.floor(Math.random() * 10) + 1) + '&limit=4')
+const photos = await res.json()
+console.log(photos)
+skeletons.forEach(skeleton=>skeleton.remove())
+for(let i = 0; i < photos.length; i++){
+createCard(photos[i])
+}
+})
+loadMore.addEventListener("click", async () =>{
+const skeletons = loadSkeletons()
+const res = await fetch('https://picsum.photos/v2/list?page=' + (Math.floor(Math.random() * 10) + 1) + '&limit=4')
+const photos = await res.json()
+skeletons.forEach(skeleton => skeleton.remove())
+for(let i = 0; i < photos.length; i++){
+createCard(photos[i])
 }
 })
